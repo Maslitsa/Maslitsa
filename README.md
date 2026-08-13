@@ -6,3 +6,5 @@
 - 📫 If you are interested in my project, or have any issue, you can find me at ussenov.miras08@gmail.com or just connect at [LinkedIn](https://www.linkedin.com/in/ussenovmiras).
 
 ![Profile Views](https://komarev.com/ghpvc/?username=Maslitsa&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Maslitsa?style=social)
+
+<a href="https://readme-jokes.vercel.app"><img align="center" src="https://readme-jokes.vercel.app/api" alt="README Jokes"></a>
