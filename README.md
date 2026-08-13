@@ -7,4 +7,4 @@
 
 ![Profile Views](https://komarev.com/ghpvc/?username=Maslitsa&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Maslitsa?style=social)
 
-![Miras Ussenov](./wordmark.svg)
+![Miras Ussenov](https://raw.githubusercontent.com/Maslitsa/Maslitsa/main/wordmark.svg)
