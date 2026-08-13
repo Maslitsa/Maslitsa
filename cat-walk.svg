@@ -1,0 +1,380 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 150" width="800" height="150" role="img" aria-label="A Bengal cat in a cowboy hat chases a mouse; at each wall the mouse dodges its paw and the cat kicks off the wall to chase back the other way">
+  <title>Cowboy Bengal chasing a mouse off the walls</title>
+
+  <style>
+    :root {
+      --fur:       #D99B4E;
+      --fur-dark:  #B67E38;
+      --cream:     #F6E7CC;
+      --rosette:   #3A2A1A;
+      --rosette-in:#A2652A;
+      --ink:       #241810;
+      --pink:      #E79AA0;
+      --eye:       #86A63C;
+      --hat:       #8A5A34;
+      --hat-band:  #5E3C22;
+      --star:      #C0392B;
+      --mouse:     #9AA1A8;
+      --mouse-dk:  #767D84;
+      --mouse-ear: #DFA9AF;
+      --ground:    rgba(120, 120, 120, 0.35);
+      --wall:      rgba(120, 120, 120, 0.16);
+      --wall-line: rgba(120, 120, 120, 0.30);
+      --shadow:    rgba(0, 0, 0, 0.16);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ground:    rgba(200, 200, 200, 0.22);
+        --wall:      rgba(200, 200, 200, 0.10);
+        --wall-line: rgba(200, 200, 200, 0.20);
+        --shadow:    rgba(0, 0, 0, 0.34);
+      }
+    }
+
+    .fur   { fill: var(--fur); }
+    .fur-d { fill: var(--fur-dark); }
+    .cream { fill: var(--cream); }
+    .mark  { fill: none; stroke: var(--rosette); stroke-linecap: round; }
+    .line  { fill: none; stroke: var(--ink); stroke-linecap: round; }
+
+    /* every pivot is anchored to its own bounding box, pinned by an invisible rect */
+    #cat-flip, #cat-tilt, #mouse-flip, .leg, .swipe, .tail, .head,
+    .m-leg, .m-tail, .shadow, #eye-shine {
+      transform-box: fill-box;
+    }
+
+    /* =========================================================
+       THE CHASE — 14s round trip.
+       Outer groups (14s) carry the run + the turn.
+       Inner groups (7s) carry the wall move, which happens twice.
+       ========================================================= */
+
+    /* ---- cat: runs to the wall and stays pinned while it kicks off ---- */
+    /* Timing note: the long floor crossings are LINEAR so the paws don't skate,
+       with short eased ramps at each end. Every turn is a continuous spin through
+       scaleX(0) rather than a snap, so nothing in here changes direction abruptly. */
+
+    #cat-x { animation: cat-run 14s linear infinite; }
+    @keyframes cat-run {
+      0%        { transform: translateX(4px);   animation-timing-function: ease-in; }
+      6%        { transform: translateX(60px);  animation-timing-function: linear; }
+      36%       { transform: translateX(600px); animation-timing-function: ease-out; }
+      42%       { transform: translateX(656px); }
+      50%       { transform: translateX(656px); animation-timing-function: ease-in; }
+      56%       { transform: translateX(600px); animation-timing-function: linear; }
+      86%       { transform: translateX(60px);  animation-timing-function: ease-out; }
+      92%, 100% { transform: translateX(4px); }
+    }
+
+    /* the turn: a spin through zero width at the top of the climb, not a snap */
+    #cat-flip {
+      transform-origin: 50% 50%;
+      animation: cat-turn 14s ease-in-out infinite;
+    }
+    @keyframes cat-turn {
+      0%,  44%  { transform: scaleX(1); }
+      47%, 94%  { transform: scaleX(-1); }
+      97%, 100% { transform: scaleX(1); }
+    }
+
+    /* runs up the wall: pivot on the back paws, front paws go up ---- */
+    #cat-tilt {
+      transform-origin: 34% 84%;
+      animation: climb 7s ease-in-out infinite;
+    }
+    @keyframes climb {
+      0%, 78%  { transform: rotate(0deg); }
+      88%, 94% { transform: rotate(-42deg); }
+      100%     { transform: rotate(0deg); }
+    }
+
+    /* slides up the wall face while tilted, then drops back down */
+    #cat-rise { animation: rise 7s ease-in-out infinite; }
+    @keyframes rise {
+      0%, 78%  { transform: translate(0, 0); }
+      88%, 94% { transform: translate(26px, -6px); }
+      100%     { transform: translate(0, 0); }
+    }
+
+    /* the paw swipe at the mouse, a beat before the wall */
+    .swipe {
+      transform-origin: 50% 0%;
+      animation: swipe 7s ease-in-out infinite;
+    }
+    @keyframes swipe {
+      0%, 64%   { transform: rotate(0deg); }
+      74%       { transform: rotate(-80deg); }
+      82%       { transform: rotate(8deg); }
+      90%, 100% { transform: rotate(0deg); }
+    }
+
+    /* ---- mouse: gets cornered, then slips back past the cat ---- */
+    #mouse-x { animation: mouse-run 14s linear infinite; }
+    @keyframes mouse-run {
+      0%        { transform: translateX(200px); animation-timing-function: linear; }
+      26%       { transform: translateX(690px); animation-timing-function: ease-out; }
+      30%       { transform: translateX(726px); }                                    /* cornered, far wall */
+      36%       { transform: translateX(726px); animation-timing-function: ease-in; }
+      40%       { transform: translateX(540px); animation-timing-function: ease-out; } /* bolts under the cat */
+      82%       { transform: translateX(10px); }                                     /* cornered, near wall */
+      88%       { transform: translateX(10px);  animation-timing-function: ease-in; }
+      100%      { transform: translateX(200px); }
+    }
+
+    #mouse-flip {
+      transform-origin: 50% 50%;
+      animation: mouse-turn 14s ease-in-out infinite;
+    }
+    @keyframes mouse-turn {
+      0%,  37%   { transform: scaleX(1); }
+      39.5%, 89% { transform: scaleX(-1); }
+      91.5%, 100%{ transform: scaleX(1); }
+    }
+
+    /* the dodge: ducks low under the swiping paw as it slips by */
+    #mouse-hop { animation: dodge 7s ease-in-out infinite; }
+    @keyframes dodge {
+      0%, 72%   { transform: translateY(0); }
+      76%       { transform: translateY(-9px); }
+      80%       { transform: translateY(-3px); }
+      84%, 100% { transform: translateY(0); }
+    }
+
+    /* ---- the fast stuff: gait, tails, blink ---- */
+    .bob { animation: bob 0.18s ease-in-out infinite alternate; }
+    @keyframes bob {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-1.6px); }
+    }
+
+    /* stride tuned to the linear travel speed so the paws don't skate */
+    .leg { transform-origin: 50% 0%; animation: swing 0.36s ease-in-out infinite; }
+    .leg.b { animation-delay: -0.18s; }
+    @keyframes swing {
+      0%   { transform: rotate(28deg); }
+      50%  { transform: rotate(-28deg); }
+      100% { transform: rotate(28deg); }
+    }
+
+    .tail {
+      transform-origin: 100% 100%;
+      animation: sway 1.1s ease-in-out infinite alternate;
+    }
+    @keyframes sway {
+      from { transform: rotate(-14deg); }
+      to   { transform: rotate(12deg); }
+    }
+
+    .head {
+      transform-origin: 21% 100%;
+      animation: nod 0.92s ease-in-out infinite alternate;
+    }
+    @keyframes nod {
+      from { transform: rotate(-3deg); }
+      to   { transform: rotate(3deg); }
+    }
+
+    #eye-shine {
+      transform-origin: center;
+      animation: blink 5.4s infinite;
+    }
+    @keyframes blink {
+      0%, 93%, 100% { transform: scaleY(1); }
+      96%           { transform: scaleY(0.06); }
+    }
+
+    #mouse-dart { animation: dart 0.9s ease-in-out infinite alternate; }
+    @keyframes dart {
+      from { transform: translate(0, 0); }
+      to   { transform: translate(3px, -1px); }
+    }
+
+    .m-leg { transform-origin: 50% 0%; animation: scurry 0.18s ease-in-out infinite; }
+    .m-leg.b { animation-delay: -0.09s; }
+    @keyframes scurry {
+      0%   { transform: rotate(22deg); }
+      50%  { transform: rotate(-22deg); }
+      100% { transform: rotate(22deg); }
+    }
+
+    .m-tail {
+      transform-origin: 100% 100%;
+      animation: flick 0.34s ease-in-out infinite alternate;
+    }
+    @keyframes flick {
+      from { transform: rotate(-12deg); }
+      to   { transform: rotate(16deg); }
+    }
+
+    /* shadows shrink away as they leave the ground */
+    .shadow {
+      fill: var(--shadow);
+      transform-origin: 50% 50%;
+      animation: squish 0.18s ease-in-out infinite alternate;
+    }
+    @keyframes squish {
+      from { transform: scale(1, 1); }
+      to   { transform: scale(0.94, 1); }
+    }
+    #cat-shadow   { animation: squish 0.18s ease-in-out infinite alternate, lift 7s ease-in-out infinite; }
+    #mouse-shadow { animation: squish 0.18s ease-in-out infinite alternate, lift-m 7s ease-in-out infinite; }
+    @keyframes lift {
+      0%, 80%  { opacity: 1; }
+      88%, 94% { opacity: 0.2; }
+      100%     { opacity: 1; }
+    }
+    @keyframes lift-m {
+      0%, 72%  { opacity: 1; }
+      76%      { opacity: 0.35; }
+      84%, 100%{ opacity: 1; }
+    }
+  </style>
+
+  <!-- ===== the room: two walls and a floor ===== -->
+  <g>
+    <rect x="0" y="0" width="14" height="128" fill="var(--wall)"/>
+    <rect x="786" y="0" width="14" height="128" fill="var(--wall)"/>
+    <path d="M14 0 V128 M786 0 V128" stroke="var(--wall-line)" stroke-width="2"/>
+    <path d="M0 32 h14 M0 72 h14 M0 108 h14 M786 32 h14 M786 72 h14 M786 108 h14"
+          stroke="var(--wall-line)" stroke-width="1.5" opacity="0.7"/>
+    <line x1="0" y1="127" x2="800" y2="127" stroke="var(--ground)" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- ======================== THE CAT ======================== -->
+  <g id="cat-x">
+    <ellipse id="cat-shadow" class="shadow" cx="68" cy="126" rx="42" ry="4"/>
+    <g id="cat-flip">
+      <rect x="-30" y="0" width="200" height="150" fill="none"/>
+      <g id="cat-rise">
+        <g id="cat-tilt">
+          <rect x="-30" y="0" width="200" height="150" fill="none"/>
+          <g transform="translate(0, 50)">
+
+            <!-- ===== far legs ===== -->
+            <g class="leg b">
+              <rect class="fur-d" x="32" y="48" width="9" height="28" rx="4.5"/>
+              <path class="mark" d="M32 57 h9 M32 64 h9" stroke-width="2.5" opacity="0.55"/>
+              <ellipse class="fur-d" cx="36.5" cy="75" rx="6" ry="3.5"/>
+            </g>
+            <g class="leg">
+              <rect class="fur-d" x="74" y="48" width="9" height="28" rx="4.5"/>
+              <path class="mark" d="M74 57 h9 M74 64 h9" stroke-width="2.5" opacity="0.55"/>
+              <ellipse class="fur-d" cx="78.5" cy="75" rx="6" ry="3.5"/>
+            </g>
+
+            <!-- ===== tail: ringed, dark tip ===== -->
+            <g class="tail">
+              <path d="M26 42 C 6 40, 0 16, 15 7" fill="none" stroke="var(--fur)" stroke-width="7.5" stroke-linecap="round"/>
+              <path d="M26 42 C 6 40, 0 16, 15 7" fill="none" stroke="var(--rosette)" stroke-width="7.5"
+                    stroke-linecap="butt" stroke-dasharray="3.5 9" opacity="0.85"/>
+              <path d="M11 8 C 13 6, 15 6, 16 7" fill="none" stroke="var(--rosette)" stroke-width="7.5" stroke-linecap="round"/>
+            </g>
+
+            <!-- ===== body ===== -->
+            <g class="bob">
+              <ellipse class="fur" cx="58" cy="45" rx="35" ry="18"/>
+              <ellipse class="fur" cx="28" cy="42" rx="15" ry="16"/>
+
+              <ellipse class="cream" cx="60" cy="55" rx="26" ry="7" opacity="0.9"/>
+              <ellipse class="cream" cx="86" cy="48" rx="10" ry="9" opacity="0.85"/>
+
+              <path class="mark" d="M34 29 h7 M46 27 h8 M60 27 h8 M74 29 h6" stroke-width="3" opacity="0.9"/>
+
+              <ellipse cx="42" cy="41" rx="6"   ry="4.5" fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2.2"/>
+              <ellipse cx="59" cy="39" rx="6.5" ry="5"   fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2.2"/>
+              <ellipse cx="75" cy="41" rx="5.5" ry="4.2" fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2.2"/>
+              <ellipse cx="50" cy="50" rx="4.5" ry="3.2" fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2"/>
+              <ellipse cx="68" cy="50" rx="4.5" ry="3.2" fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2"/>
+              <ellipse cx="26" cy="38" rx="5"   ry="4"   fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2.2"/>
+              <ellipse cx="24" cy="50" rx="4"   ry="3"   fill="var(--rosette-in)" stroke="var(--rosette)" stroke-width="2"/>
+
+              <!-- ===== near legs (the front one also swipes) ===== -->
+              <g class="leg">
+                <rect class="fur" x="40" y="48" width="9" height="28" rx="4.5"/>
+                <path class="mark" d="M40 57 h9 M40 64 h9" stroke-width="2.5" opacity="0.75"/>
+                <ellipse class="fur" cx="44.5" cy="75" rx="6.5" ry="3.8"/>
+              </g>
+              <g class="swipe">
+                <g class="leg b">
+                  <rect class="fur" x="82" y="48" width="9" height="28" rx="4.5"/>
+                  <path class="mark" d="M82 57 h9 M82 64 h9" stroke-width="2.5" opacity="0.75"/>
+                  <ellipse class="fur" cx="86.5" cy="75" rx="6.5" ry="3.8"/>
+                </g>
+              </g>
+
+              <!-- ===== head ===== -->
+              <g class="head">
+                <path class="fur" d="M79 22 L77 3 L93 15 Z"/>
+                <path class="fur" d="M101 14 L116 2 L114 21 Z"/>
+                <path d="M81 20 L80 9 L89 15 Z"   fill="var(--pink)" opacity="0.85"/>
+                <path d="M103 16 L112 8 L111 19 Z" fill="var(--pink)" opacity="0.85"/>
+
+                <circle class="fur" cx="95" cy="28" r="16"/>
+
+                <path class="mark" d="M86 15 q 3 4 2 7 M93 13 q 3 4 2 7 M100 14 q 3 4 2 7" stroke-width="2.6" opacity="0.9"/>
+
+                <ellipse class="cream" cx="107" cy="35" rx="9" ry="6.5"/>
+                <ellipse class="cream" cx="99"  cy="37" rx="7" ry="5"/>
+
+                <ellipse cx="104" cy="25" rx="5.6" ry="6" fill="var(--eye)"/>
+                <ellipse id="eye-shine" cx="104" cy="25" rx="2.6" ry="5" fill="var(--ink)"/>
+                <circle cx="102.4" cy="22.6" r="1.4" fill="#fff" opacity="0.9"/>
+                <path class="line" d="M98.4 22 q 5.6 -5 11.2 0" stroke-width="2.1"/>
+                <path class="line" d="M99 30.5 q 5 3.5 10 0" stroke-width="1.6" opacity="0.8"/>
+
+                <path d="M110 31.5 l 5.5 2.2 l -5.5 2.2 z" fill="var(--pink)"
+                      stroke="var(--rosette)" stroke-width="1.1" stroke-linejoin="round"/>
+                <path class="line" d="M110 36.5 q 3.5 3.5 7 1" stroke-width="1.5" opacity="0.75"/>
+
+                <path class="line" d="M112 30 L 128 26"   stroke-width="1.2" opacity="0.55"/>
+                <path class="line" d="M113 33.5 L 130 33" stroke-width="1.2" opacity="0.55"/>
+                <path class="line" d="M112 37 L 128 41"   stroke-width="1.2" opacity="0.55"/>
+
+                <path class="mark" d="M88 24 q 4 5 2 10" stroke-width="2.4" opacity="0.75"/>
+
+                <!-- cowboy hat -->
+                <path d="M72 13 q 7 8 23 8 q 16 0 23 -8 q 3 6 -3 9 q -9 5 -20 5 q -11 0 -20 -5 q -6 -3 -3 -9 z" fill="var(--hat)"/>
+                <path d="M83 14 q 0 -13 12 -13 q 12 0 12 13 q -12 4 -24 0 z" fill="var(--hat)"/>
+                <path d="M89 2.5 q 6 -2.5 12 2 q -6 3 -12 0 z" fill="var(--hat-band)" opacity="0.5"/>
+                <path d="M83 12.5 q 12 4 24 0 l 0 3 q -12 4 -24 0 z" fill="var(--hat-band)"/>
+                <path d="M95 4 l 1.5 3.2 l 3.5 0.4 l -2.6 2.4 l 0.7 3.4 l -3.1 -1.7 l -3.1 1.7 l 0.7 -3.4 l -2.6 -2.4 l 3.5 -0.4 z"
+                      fill="var(--star)"/>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- ============ THE MOUSE (drawn last: it slips past in front) ============ -->
+  <g id="mouse-x">
+    <ellipse id="mouse-shadow" class="shadow" cx="30" cy="126" rx="17" ry="3"/>
+    <g id="mouse-flip">
+      <rect x="0" y="0" width="64" height="150" fill="none"/>
+      <g id="mouse-hop">
+        <g id="mouse-dart">
+          <g transform="translate(0, 50)">
+            <g class="m-leg">
+              <rect fill="var(--mouse-dk)" x="23" y="64" width="4" height="13" rx="2"/>
+            </g>
+            <g class="m-leg b">
+              <rect fill="var(--mouse-dk)" x="37" y="64" width="4" height="13" rx="2"/>
+            </g>
+            <g class="m-tail">
+              <path d="M16 59 C 4 57, 0 45, 10 42" fill="none" stroke="var(--mouse-dk)"
+                    stroke-width="2.4" stroke-linecap="round"/>
+            </g>
+            <ellipse fill="var(--mouse)"     cx="30" cy="60" rx="15" ry="9"/>
+            <circle  fill="var(--mouse)"     cx="39" cy="52" r="6.5"/>
+            <circle  fill="var(--mouse-ear)" cx="39.5" cy="52" r="3.6"/>
+            <path    fill="var(--mouse)"     d="M38 57 q 12 -3 18 7 q -9 6 -18 2 z"/>
+            <circle  fill="var(--ink)"       cx="48" cy="60" r="1.7"/>
+            <circle  fill="var(--mouse-ear)" cx="55.5" cy="63.5" r="1.8"/>
+            <path class="line" d="M52 64 L 60 61 M52 66 L 60 68" stroke-width="1" opacity="0.5"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
