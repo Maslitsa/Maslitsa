@@ -7,6 +7,7 @@
 
 ![Profile Views](https://komarev.com/ghpvc/?username=Maslitsa&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Maslitsa?style=social)
 
-<img src="https://raw.githubusercontent.com/Maslitsa/Maslitsa/main/cat-walk.svg?v=2" width="100%" alt="a cat chasing a mouse">
+<img src="https://raw.githubusercontent.com/Maslitsa/Maslitsa/main/cat-walk.svg?v=3" width="100%" alt="a cat chasing a mouse">
+
 
 
