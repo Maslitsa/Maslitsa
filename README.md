@@ -7,4 +7,3 @@
 
 ![Profile Views](https://komarev.com/ghpvc/?username=Maslitsa&color=blue) ![GitHub stars](https://img.shields.io/github/stars/Maslitsa?style=social)
 
-<a href="https://readme-jokes.vercel.app"><img align="center" src="https://readme-jokes.vercel.app/api" alt="README Jokes"></a>
